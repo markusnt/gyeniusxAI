@@ -1,0 +1,1 @@
+# Pacote app do StudyAI-AI
