@@ -83,3 +83,28 @@ class ChatResponse(BaseModel):
 
     content: str = Field(..., description="Resposta da IA (texto ou JSON bruto)")
     quiz: QuizSchema | None = Field(default=None, description="Quiz estruturado quando o modo tutor retorna JSON")
+
+
+# --- Flashcards ---
+class FlashcardItem(BaseModel):
+    question: str = Field(..., description="Pergunta do flashcard")
+    answer: str = Field(..., description="Resposta do flashcard")
+
+
+class FlashcardsRequest(BaseModel):
+    context: str = Field(..., description="Texto do documento")
+    count: int = Field(default=10, ge=1, le=50, description="Quantidade de cards")
+
+
+class FlashcardsResponse(BaseModel):
+    cards: list[FlashcardItem] = Field(..., description="Lista de flashcards gerados")
+
+
+# --- Modo Prova ---
+class ProvaRequest(BaseModel):
+    context: str = Field(..., description="Texto do documento")
+    count: int = Field(default=10, ge=1, le=20, description="Quantidade de questões")
+    difficulty: Literal["facil", "medio", "dificil"] = Field(
+        default="medio",
+        description="Nível de dificuldade da prova",
+    )

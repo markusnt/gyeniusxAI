@@ -12,7 +12,7 @@ from app.config import get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.limiter import limiter
 from app.middleware.security_headers import SecurityHeadersMiddleware
-from app.routers import chat
+from app.routers import chat, flashcards, prova
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,11 +47,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(
-    chat.router,
-    prefix="/chat",
-    tags=["chat"],
-)
+app.include_router(chat.router, prefix="/chat", tags=["chat"])
+app.include_router(flashcards.router, prefix="/flashcards", tags=["flashcards"])
+app.include_router(prova.router, prefix="/prova", tags=["prova"])
 
 
 @app.get("/")
