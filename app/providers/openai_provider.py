@@ -1,5 +1,7 @@
 """Provedor OpenAI - chat com GPT."""
 
+from collections.abc import Iterator
+
 from openai import OpenAI
 
 
@@ -35,3 +37,29 @@ class OpenAIProvider:
 
         content = response.choices[0].message.content
         return content.strip() if content else "Sem conteúdo na resposta."
+
+    def chat_stream(
+        self,
+        *,
+        prompt: str,
+        mode_instruction: str = "",
+    ) -> Iterator[str]:
+        """Gera resposta em streaming, token a token."""
+        system_content = (
+            "Você é um assistente de estudos. Responda com base no texto do documento fornecido. "
+            "Se a pergunta não puder ser respondida com o contexto, diga que não há informações suficientes."
+        )
+        stream = self._client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.3,
+            max_tokens=2048,
+            stream=True,
+        )
+        for chunk in stream:
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta and delta.content:
+                yield delta.content
