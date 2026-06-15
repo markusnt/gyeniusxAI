@@ -8,7 +8,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.config import get_settings
+from app.config import get_settings, validate_production_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.limiter import limiter
 from app.middleware.security_headers import SecurityHeadersMiddleware
@@ -20,6 +20,7 @@ logging.basicConfig(
 )
 
 settings = get_settings()
+validate_production_settings()
 
 app = FastAPI(
     title="StudyAI-AI",

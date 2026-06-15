@@ -71,6 +71,7 @@ def chat(request: Request, data: ChatRequest) -> ChatResponse:
         depth=data.depth,
         conversation_history=data.conversation_history or "",
         has_web_context=data.has_web_context,
+        locale=data.locale,
     )
     quiz = None
     if data.mode == "tutor":
@@ -90,12 +91,13 @@ def _stream_chat(data: ChatRequest):
             depth=data.depth,
             conversation_history=data.conversation_history or "",
             has_web_context=data.has_web_context,
+            locale=data.locale,
         ):
             yield f"data: {json.dumps({'content': chunk})}\n\n"
         yield f"data: {json.dumps({'done': True})}\n\n"
-    except Exception as e:
+    except Exception:
         logger.exception("Erro no stream")
-        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        yield f"data: {json.dumps({'error': 'Erro interno no serviço de IA'})}\n\n"
 
 
 @router.post(

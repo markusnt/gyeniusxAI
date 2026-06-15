@@ -31,6 +31,7 @@ def chat_with_context(
     depth: str = "normal",
     conversation_history: str = "",
     has_web_context: bool = False,
+    locale: str = "pt-BR",
 ) -> str:
     """
     Envia contexto + mensagem ao LLM. Suporta memória da sessão, controle de profundidade e modo tutor.
@@ -45,6 +46,7 @@ def chat_with_context(
         depth_instruction=depth_instruction,
         conversation_history=conversation_history,
         has_web_context=has_web_context,
+        locale=locale,
     )
     provider_names = [p.strip().lower() for p in settings.llm_providers.split(",") if p.strip()]
     if not provider_names:
@@ -77,6 +79,7 @@ def chat_with_context_stream(
     depth: str = "normal",
     conversation_history: str = "",
     has_web_context: bool = False,
+    locale: str = "pt-BR",
 ):
     """
     Igual a chat_with_context, mas gera chunks em streaming (generator).
@@ -91,6 +94,7 @@ def chat_with_context_stream(
         depth_instruction=depth_instruction,
         conversation_history=conversation_history,
         has_web_context=has_web_context,
+        locale=locale,
     )
     provider_names = [p.strip().lower() for p in settings.llm_providers.split(",") if p.strip()]
     if not provider_names:
@@ -116,12 +120,12 @@ def chat_with_context_stream(
     raise RuntimeError("Nenhum provedor de LLM disponível. Configure OPENAI_API_KEY ou GOOGLE_API_KEY.")
 
 
-def generate_flashcards(*, context: str, count: int = 10) -> list[dict]:
+def generate_flashcards(*, context: str, count: int = 10, locale: str = "pt-BR") -> list[dict]:
     """
     Gera flashcards a partir do contexto do documento.
     Retorna lista de {"question": str, "answer": str}.
     """
-    prompt = build_flashcards_prompt(context=context, count=count)
+    prompt = build_flashcards_prompt(context=context, count=count, locale=locale)
 
     provider_names = [p.strip().lower() for p in get_settings().llm_providers.split(",") if p.strip()]
     if not provider_names:
@@ -167,12 +171,25 @@ def generate_flashcards(*, context: str, count: int = 10) -> list[dict]:
     raise RuntimeError("Nenhum provedor de LLM disponível.")
 
 
-def generate_prova(*, context: str, count: int = 10, difficulty: str = "medio") -> dict:
+def generate_prova(
+    *,
+    context: str,
+    count: int = 10,
+    difficulty: str = "medio",
+    question_types: list[str] | None = None,
+    locale: str = "pt-BR",
+) -> dict:
     """
     Gera uma prova (quiz) a partir do contexto do documento.
     Retorna dict no formato QuizSchema: {title, topic, difficulty, questionCount, questions}.
     """
-    prompt = build_prova_prompt(context=context, count=count, difficulty=difficulty)
+    prompt = build_prova_prompt(
+        context=context,
+        count=count,
+        difficulty=difficulty,
+        question_types=question_types or ["multiple_choice"],
+        locale=locale,
+    )
 
     provider_names = [p.strip().lower() for p in get_settings().llm_providers.split(",") if p.strip()]
     if not provider_names:

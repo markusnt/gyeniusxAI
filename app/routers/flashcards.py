@@ -15,7 +15,7 @@ router = APIRouter()
 @limiter.limit(get_settings().rate_limit_chat)
 def generate(request: Request, data: FlashcardsRequest) -> FlashcardsResponse:
     """Gera flashcards a partir do contexto do documento."""
-    cards = generate_flashcards(context=data.context, count=data.count)
+    cards = generate_flashcards(context=data.context, count=data.count, locale=data.locale)
     return FlashcardsResponse(
         cards=[FlashcardItem(question=c["question"], answer=c["answer"]) for c in cards]
     )

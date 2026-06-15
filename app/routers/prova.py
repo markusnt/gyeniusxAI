@@ -19,5 +19,7 @@ def generate(request: Request, data: ProvaRequest) -> QuizSchema:
         context=data.context,
         count=data.count,
         difficulty=data.difficulty,
+        question_types=data.question_types,
+        locale=data.locale,
     )
     return QuizSchema.model_validate(result)
